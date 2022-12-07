@@ -1,6 +1,6 @@
 # Integrate Adcash Adblock POP/Autotag
 
-1. Download [Adcash wordpress plugin - adblock.zip](https://github.com/adcash/customer-scripts/blob/master/wordpress/adblock.zip)
+1. Download [Adcash wordpress plugin - adblock.zip](https://github.com/adcash/customer-scripts/raw/master/wordpress/adblock.zip)
 2. Go to your worpress Admin panel
 3. Click on 'plugins' menu
 4. Click on 'Upload Plugin'  button

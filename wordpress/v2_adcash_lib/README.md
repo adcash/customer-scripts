@@ -47,3 +47,4 @@ Note that there can be only one instance of Adcash at a given web page.
 1. Go to 'Plugins' menu
 2. Click 'Deactivate' - this will stop your tag from working but will keep your settings if you activate it later
 3. Click 'Delete' to completely remove the plugin and settings
+4. Remove your script tags that utilise the library from your page(s)

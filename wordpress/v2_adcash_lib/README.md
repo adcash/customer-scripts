@@ -17,34 +17,30 @@ We recommend to keep the default value of 60.
 ## Run ads on a single page
 1. Go to Wordpress Admin panel -> Pages and select the desired page
 2. Click on the Toggle Block Inserter and add a Custom HTML block
-3. Inside the block utilise the library i.e. To run a pop ads with zone '1234567' use the following code:
+3. Inside the block, i.e. to run a pop ad with zone '1234567', use the following code:
 
 ```
 <script>
-    var adcash = new Adcash();
-    adcash.runPop({ zoneId: '1234567' });
+    aclib.runPop({ zoneId: '1234567' });
 </script>
 ```
-Note that there can be only one instance of Adcash at a given web page.
 4. Click Update
 
 
 ## Run ads on all pages
 1. Go to Wordpress Admin panel -> Tools -> Theme File Editor
 2. Find the part with <header/> i.e. parts -> header.html and click on it
-Inside the wrapper element utilise the library i.e. To run a pop ads with zone '1234567' use the following code:
+Inside the wrapper element, i.e. to run a pop ad with zone '1234567', use the following code:
 
 ```
 <script>
-    var adcash = new Adcash();
-    adcash.runPop({ zoneId: '1234567' });
+    aclib.runPop({ zoneId: '1234567' });
 </script>
 ```
-Note that there can be only one instance of Adcash at a given web page.
 4. Click Update File
 
 ## Uninstall plugin:
 1. Go to 'Plugins' menu
 2. Click 'Deactivate' - this will stop your tag from working but will keep your settings if you activate it later
 3. Click 'Delete' to completely remove the plugin and settings
-4. Remove your script tags that utilise the library from your page(s)
+4. Remove your script tags that utilise aclib from your page(s)

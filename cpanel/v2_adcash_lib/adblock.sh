@@ -8,11 +8,6 @@ update () {
    curl --location --request GET "https://youradexchange.com/ad/s2sadblock.php?v=3&format=js" > "$DIR/$ADCASH_LIB_FILE_NAME"
 }
 
-if [ "$1" != "removeall" ] && [ "$1" != "uninstall" ]; then
-  echo "Usage: bash $0 add|get|remove|removeall|uninstall"
-  exit 1
-fi
-
 COMMAND="bash $DIR/$0 get"
 if [ "$1" = "add" ]; then
 	(crontab -l ; echo "0 * * * * $COMMAND") 2>&1 | grep -v "no crontab" | sort | uniq | crontab -

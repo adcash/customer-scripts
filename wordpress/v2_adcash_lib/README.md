@@ -17,11 +17,18 @@ We recommend to keep the default value of 60.
 ## Run ads on a single page
 1. Go to Wordpress Admin panel -> Pages and select the desired page
 2. Click on the Toggle Block Inserter and add a Custom HTML block
-3. Inside the block, i.e. to run a pop ad with zone '1234567', use the following code:
+3. Inside the block, i.e. to run Pop with zone '1234567', use the following code:
 
 ```
 <script>
     aclib.runPop({ zoneId: '1234567' });
+</script>
+```
+
+Example for running AutoTag zone with zone id = 'ab1cdefg23':
+```
+<script>
+    aclib.runAutoTag({ zoneId: 'ab1cdefg23' });
 </script>
 ```
 4. Click Update
@@ -30,11 +37,18 @@ We recommend to keep the default value of 60.
 ## Run ads on all pages
 1. Go to Wordpress Admin panel -> Tools -> Theme File Editor
 2. Find the part with <header/> i.e. parts -> header.html and click on it
-Inside the wrapper element, i.e. to run a pop ad with zone '1234567', use the following code:
+Inside the wrapper element, i.e. to run Pop with zone '1234567', use the following code:
 
 ```
 <script>
     aclib.runPop({ zoneId: '1234567' });
+</script>
+```
+
+Example for running AutoTag zone with zone id = 'ab1cdefg23':
+```
+<script>
+    aclib.runAutoTag({ zoneId: 'ab1cdefg23' });
 </script>
 ```
 4. Click Update File

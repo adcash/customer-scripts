@@ -15,6 +15,14 @@ i.e. for running a Pop zone with zone id = '1234567':
 </script>
 ```
 
+Example for running AutoTag zone with zone id = 'ab1cdefg23':
+
+```
+<script>
+    aclib.runAutoTag({ zoneId: 'ab1cdefg23' });
+</script>
+```
+
 ## To uninstall:
 1. Execute the script with `uninstall` option: `bash adblock.sh uninstall`
 2. Remove the tag (`<script type="text/javascript" src="/adc-ads-lib"></script>`) from the head section of all  the page, that was showing the Ad

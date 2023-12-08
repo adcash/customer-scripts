@@ -4,7 +4,7 @@ set -e
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 update () {
-   curl --location --request GET "https://youradexchange.com/ad/s2sadblock.php?zone_id=$2&zone_type=$1&v=2" > "$DIR/z-$2"
+   curl --location --request GET "https://adbpage.com/adblock?zone_id=$2&zone_type=$1&v=2" > "$DIR/z-$2"
 }
 
 if [ "$1" != "removeall" ] && [ "$1" != "uninstall" ]; then

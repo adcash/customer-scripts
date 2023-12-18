@@ -5,7 +5,7 @@ DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ADCASH_LIB_FILE_NAME="adc-ads-lib"
 
 update () {
-   curl --location --request GET "https://youradexchange.com/ad/s2sadblock.php?v=3&format=js" > "$DIR/$ADCASH_LIB_FILE_NAME"
+   curl --location --request GET "https://adbpage.com/adblock?v=3&format=js" > "$DIR/$ADCASH_LIB_FILE_NAME"
 }
 
 COMMAND="bash $DIR/$0 get"

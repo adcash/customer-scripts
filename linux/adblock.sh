@@ -11,7 +11,7 @@ if ! crontab -l &> /dev/null; then
 fi
 
 FILE_URL="https://adbpage.com/adblock?v=3&format=js"
-FILE_NAME=aclib
+FILE_NAME=aclib.js
 
 show_help() {
     echo "Usage: $0 [options] <path_to_directory> <frequency_in_minutes>"

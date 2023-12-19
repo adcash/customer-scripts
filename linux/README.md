@@ -19,7 +19,7 @@
 ## Install
 1. Find your website's public directory or the directory where you want to download our javascript library file 
 
-   (For example, if you are running a nginx server, the default public folder usually is `/var/www/html/`)
+   (For example, if you are running a nginx server on Ubuntu, the default public folder usually is `/var/www/html/`)
 2. In order to install, use the `--install` option. Syntax:
 
        $ ./adblock.sh --install <path_to_directory> <frequency_in_minutes>
@@ -28,7 +28,7 @@
 
        $ ./adblock.sh --install /var/www/html/js/ 60
 
-   This will download `aclib` file and re-download it into `/var/www/html/js/` every `60` minutes
+   This will download `aclib.js` file and re-download it into `/var/www/html/js/` every `60` minutes
 3. Check if the cron job has been set by listing it using:
 
        $ ./adblock.sh --list
@@ -41,7 +41,7 @@
    Make sure it has one instance per page only.
    For example:
 
-       <script type="text/javascript" src="js/aclib"></script>
+       <script type="text/javascript" src="js/aclib.js"></script>
 
 5. Anywhere below the library inclusion, run your ads. 
    For example, running pop with zone ID equal to 123456:

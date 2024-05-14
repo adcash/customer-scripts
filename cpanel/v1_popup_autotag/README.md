@@ -1,6 +1,6 @@
 # Integrate Adcash Adblock POP/Autotag
 
-1. Download [Adcash script - adblock.sh](https://raw.githubusercontent.com/adcash/customer-scripts/master/cpanel/adblock.sh)
+1. Download [Adcash script - adblock.sh](https://raw.githubusercontent.com/adcash/customer-scripts/master/cpanel/v1_popup_autotag/adblock.sh)
 2. Upload it into your public directory on Cpanel
 3. Open terminal from Cpanel
 4. Go to your public directory `cd ~/public_html`

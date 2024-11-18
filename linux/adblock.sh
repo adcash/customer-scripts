@@ -1,12 +1,12 @@
 #!/bin/bash
 
 if ! command -v curl &> /dev/null; then
-    echo "curl could not be found. Please install curl to use this script."
+    echo "curl command not found. Exit."
     exit 1
 fi
 
-if ! crontab -l &> /dev/null; then
-    echo "No crontab set up for this user. Please create a crontab before running this script."
+if ! command -v crontab &> /dev/null; then
+    echo "crontab command not found. Exit."
     exit 1
 fi
 

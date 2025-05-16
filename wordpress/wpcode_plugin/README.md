@@ -9,9 +9,9 @@ This guide was tested with the following versions:
 
 1. Install the [WPCode](https://wordpress.org/plugins/insert-headers-and-footers/) plugin and enable it
 2. Click `Code Snippets` → `Add New` → `Add your Custom Code`
-3. Select the code type for your snippet:
+3. Choose one of the following depending on which integration you want:
 
-   1. Select `HTML Snippet` if you want to integrate standard ads
+   1. Standard ads → select `HTML Snippet`
 
       Paste the following HTML snippets in the editor
 
@@ -33,7 +33,7 @@ This guide was tested with the following versions:
 
       Example for Banner ad:
 
-      > **Note:** If you want to render the banner ad inside a specific element, you need to pass the `renderIn` property, which should be the `querySelector` of the target element. Otherwise, by default, it will be rendered inside its own parent element.
+      > **Note:** If you want to render the banner ad inside a specific element, you need to pass the `renderIn` property, which should be the [querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) of the target element. Otherwise, by default, it will be rendered inside its own parent element.
 
       ```html
       <script type="text/javascript">
@@ -44,7 +44,7 @@ This guide was tested with the following versions:
       </script>
       ```
 
-   2. Select `PHP Snippet` if you prefer to use our adblock solution
+   2. Anti-adblock ads → select `PHP Snippet`
 
       Paste the following PHP snippet in the editor
 

@@ -64,7 +64,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
     <br>
 
    **Example:**
-   If you’re using an Nginx server on Ubuntu, the default public directory is `/var/www/html/`. To install the script there (with a filename `lib.js`) and update it every 5 minutes:
+   If you’re using an Nginx server on Ubuntu, the default public directory is typically `/var/www/html/`. To install the script in that directory using the filename `lib.js` and configure it to update every `5` minutes, run:
 
    ```bash
    ./anti-adblock.sh --install /var/www/html/lib.js 5
@@ -85,7 +85,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
    ./anti-adblock.sh --list
    ```
 
-5. **Include the Anti-Adblock Library in Your Website:**
+5. **Include the Anti-Adblock Library Script in Your Website:**
 
    Add the following snippet to your webpage HTML.
 
@@ -124,7 +124,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
    1. Open your website in a browser with Adblock turned on.
    2. Press **F12** to open Developer Tools.
    3. Go to the **Network** tab.
-   4. Refresh the page and confirm that library loads successfully without errors.
+   4. Refresh the page and confirm that the library script loads successfully without errors.
 
 ## Best Practices & Tips
 
@@ -132,4 +132,3 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
 - Use obscure, non-obvious filenames for the anti-adblock library js file (e.g. t48s7z.js).
 - Rotate the filename periodically to avoid long-term detection.
 - Don't hard-code the filename in multiple places – use a config or variable if possible.
-- Monitor Anti-Adblock effectiveness using A/B testing or custom events in analytics.

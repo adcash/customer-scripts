@@ -85,7 +85,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
    ./anti-adblock.sh --list
    ```
 
-5. **Include the Anti-Adblock Library Script in Your Website:**
+5. **Include the Anti-Adblock Library in Your Website:**
 
    Add the following snippet to your webpage HTML.
 
@@ -124,7 +124,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
    1. Open your website in a browser with Adblock turned on.
    2. Press **F12** to open Developer Tools.
    3. Go to the **Network** tab.
-   4. Refresh the page and confirm that `lib.js` loads successfully without errors.
+   4. Refresh the page and confirm that library loads successfully without errors.
 
 ## Best Practices & Tips
 

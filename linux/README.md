@@ -102,7 +102,7 @@ _(If you’re unsure, your hosting provider or developer can confirm this.)_
 
 6. **Initialize Ads**
 
-   Add this snippet 🚨 **after** the library script tag, such as in the body or footer:
+   Add this snippet **after** the library script tag, such as in the body or footer:
 
    ```html
    <script>

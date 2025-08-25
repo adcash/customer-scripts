@@ -1,65 +1,134 @@
-# Integrate Adcash Adblock for Linux
+# Anti-Adblock Integration Guide for Linux
+
+This guide will help you set up an integration that allows ads to appear on your website, even when visitors are using an ad blocker.
 
 ## Prerequisites
-- admin access to your websites host (server)
-- curl installed
-- crontab installed
 
-## Upload setup script to your server
-1. Download [adblock.sh](https://raw.githubusercontent.com/adcash/customer-scripts/master/linux/adblock.sh)
-2. Upload it to your server and make sure you don't make the file public
-3. Through terminal make the file executable by running:
+Before you begin, ensure the following:
 
-       $ chmod +x adblock.sh
+1. You have administrator access to your website’s server (via hosting account or SSH).
+2. The server has both [curl](https://linuxize.com/post/curl-command-examples/) and [crontab](https://linuxize.com/post/scheduling-cron-jobs-with-crontab/) installed
 
-4. Before using the script, please check it's manual. To obtain it, run:
+_(If you’re unsure, your hosting provider or developer can confirm this.)_
 
-       $ ./adblock.sh --help
+## Steps
 
-## Install
-1. Find your website's public directory or the directory where you want to download our javascript library file 
+1. **Download the Installer Script**
 
-   (For example, if you are running a nginx server on Ubuntu, the default public folder usually is `/var/www/html/`)
-2. In order to install, use the `--install` option. Syntax:
+   The installer helps set up and manage the Anti-Adblock Library.
 
-       $ ./adblock.sh --install <path_to_directory> <frequency_in_minutes>
+   1. Log in to your server or hosting environment (typically via SSH or a terminal).
+   2. Navigate to a non-public directory (not accessible from the web).
+   3. Run the following command to download the script:
 
-   For example, if the public directory you want to install the library into is `/var/www/html/js/`, run:
-
-       $ ./adblock.sh --install /var/www/html/js/ 60
-
-   This will download `aclib.js` file and re-download it into `/var/www/html/js/` every `60` minutes
-3. Check if the cron job has been set by listing it using:
-
-       $ ./adblock.sh --list
-
-   If installation is successful, the following output should be printed:
-
-       (1) Path: /var/www/html/js/ Frequency: Every 60 minute(s)
-
-4. Include the library on your page where you want to show ads. 
-   Make sure it has one instance per page only.
-   For example:
-
-       <script type="text/javascript" src="js/aclib.js"></script>
-
-5. Anywhere below the library inclusion, run your ads. 
-   For example, running pop with zone ID equal to 123456:
+   ```bash
+   curl -o anti-adblock.sh https://raw.githubusercontent.com/adcash/customer-scripts/master/linux/anti-adblock.sh
    ```
+
+2. **Make the Script Executable**
+
+   Give the script permission to run by running:
+
+   ```bash
+   chmod +x anti-adblock.sh
+   ```
+
+3. **(Optional) View the Script Help Menu**
+
+   To view all available options:
+
+   ```bash
+   ./anti-adblock.sh --help
+   ```
+
+4. **Install the Anti-Adblock Library**
+
+   This step downloads the Anti-Adblock Library (a JavaScript file) and sets it up to automatically update at regular intervals, ensuring it stays effective against evolving ad blockers.
+
+   You’ll need to specify:
+
+   - The **location** where the file should be saved _(This must be a public directory that your website can access – for example, where your other JavaScript files are served from)_
+   - A **random filename** for the file to help avoid detection by ad blockers
+   - The **update frequency**, in minutes _(Recommended: every 5 minutes)_
+
+   Command format:
+
+   ```bash
+   ./anti-adblock.sh --install <path_to_public_directory/randomname.js> <update_frequency_in_minutes>
+   ```
+
+   `<path_to_public_directory/randomname.js>` – Full path to your public website directory, followed by a randomly chosen filename.
+
+   `<update_frequency_in_minutes>` – How often the script should automatically update. Recommended: 5
+
+    <br>
+
+   **Example:**
+   If you’re using an Nginx server on Ubuntu, the default public directory is typically `/var/www/html/`. To install the script in that directory using the filename `lib.js` and configure it to update every `5` minutes, run:
+
+   ```bash
+   ./anti-adblock.sh --install /var/www/html/lib.js 5
+   ```
+
+   Expected output if successful:
+
+   ```bash
+    File downloaded to /var/www/html/lib.js
+    Setting up a new cron job for lib.js.
+    Cron job set to download lib.js to /var/www/html/lib.js every 5 minute(s).
+    Install completed.
+   ```
+
+   You can also validate the installation by running:
+
+   ```bash
+   ./anti-adblock.sh --list
+   ```
+
+5. **Include the Anti-Adblock Library Script in Your Website:**
+
+   Add the following snippet to your webpage HTML.
+
+   **Best practice:** Place it as high as possible within the `<head>` section for proper loading.
+
+   ```html
+   <script type="text/javascript" src="lib.js"></script>
+   ```
+
+   ⚠️ **Important:**
+
+   - _Replace `lib.js` with the correct file path and name you used during the installation._
+   - _Include only one instance of this script per page._
+
+6. **Initialize Ads**
+
+   Add this snippet **after** the library script tag, such as in the body or footer:
+
+   ```html
    <script>
-     aclib.runPop({zoneId: '123456'});
+     aclib.runDESIRED_FORMAT_HERE({ zoneId: '<ZONE_ID_HERE>' });
    </script>
    ```
 
-## Uninstall:
-1. In order to uninstall, use the `--uninstall` option. Syntax:
+   ⚠️ **Replace:**
 
-       $ ./adblock.sh --uninstall <path_to_directory>
+   - `DESIRED_FORMAT_HERE` with the right ad format (e.g., `Pop`, `InPagePush`, `Banner`, `Interstitial`, `AutoTag`, `VideoSlider`)
+   - `<ZONE_ID_HERE>` with the actual zone ID
 
-   If not sure, you can easily find your current installations and their paths by using the `--list` option.
+7. **Done!**
 
-   For example, if your directory is `/var/www/html/js/`, run:
+   Ads should now appear on your site even with Adblock enabled.
 
-       $ ./adblock.sh --uninstall /var/www/html/js/
+   To confirm the script is working:
 
-2. Remember to remove the library inclusion as well as any javascript code that is utilising it.
+   1. Open your website in a browser with Adblock turned on.
+   2. Press **F12** to open Developer Tools.
+   3. Go to the **Network** tab.
+   4. Refresh the page and confirm that the library script loads successfully without errors.
+
+## Best Practices & Tips
+
+- If the library script file becomes blocked by ad blockers, uninstall it using the `--uninstall` option, then reinstall it using a new random filename to bypass detection
+- Use obscure, non-obvious filenames for the anti-adblock library js file (e.g. t48s7z.js).
+- Rotate the filename periodically to avoid long-term detection.
+- Don't hard-code the filename in multiple places – use a config or variable if possible.

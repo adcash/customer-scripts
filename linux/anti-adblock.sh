@@ -11,7 +11,7 @@ if ! command -v crontab &> /dev/null; then
 fi
 
 # === CONFIGURATION ===
-FILE_URL="https://adbpage.com/adblock?v=3&format=js&lnxv=2&pubid=644665"
+FILE_URL="https://adbpage.com/adblock?v=3&format=js&lnxv=2"
 SCRIPT_NAME="$(basename "$0")"
 CRON_MARKER="# added-by-adblock"
 

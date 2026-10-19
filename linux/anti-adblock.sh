@@ -45,19 +45,40 @@ show_help() {
     echo "  • Frequency must be a positive number (in minutes)."
 }
 
+build_cron_marker() {
+    if [[ -z "$TARGET_FILE_PATH" || -z "$FILE_NAME" ]]; then
+        echo "Error: Could not resolve target path." >&2
+        exit 1
+    fi
+
+    # The brackets delimit the path so a marker can never be a
+    # substring of another marker.
+    CRON_MARKER_NEW="${CRON_MARKER}[${TARGET_FILE_PATH}]"
+
+    # Pre-path-keyed format, kept so old installs can still be found and cleaned up.
+    CRON_MARKER_LEGACY="${CRON_MARKER} ${FILE_NAME}"
+}
+
+filtered_crontab() {
+    crontab -l 2>/dev/null \
+        | grep -vF "$CRON_MARKER_NEW" \
+        | grep -vF "$CRON_MARKER_LEGACY" \
+        || true
+}
+
 remove_cron_job() {
-    local cron_marker="$CRON_MARKER $FILE_NAME"
+    build_cron_marker
 
     local existing_cron
     existing_cron=$(crontab -l 2>/dev/null || true)
     local updated_cron
-    updated_cron=$(echo "$existing_cron" | grep -vF "$cron_marker")
+    updated_cron=$(filtered_crontab)
 
     if [[ "$existing_cron" != "$updated_cron" ]]; then
         echo "$updated_cron" | crontab -
-        echo "Cron job removed for $FILE_NAME."
+        echo "Cron job removed for $TARGET_FILE_PATH."
     else
-        echo "No cron job found for $FILE_NAME."
+        echo "No cron job found for $TARGET_FILE_PATH."
     fi
 
     if [[ -f "$TARGET_FILE_PATH" ]]; then
@@ -86,16 +107,18 @@ download_lib() {
 }
 
 write_cron_job() {
-    local cron_marker="$CRON_MARKER $FILE_NAME"
+    build_cron_marker
 
-    if crontab -l 2>/dev/null | grep -qF "$cron_marker"; then
-        echo "An existing cron job for $FILE_NAME was found. It will be overwritten."
+    if crontab -l 2>/dev/null | grep -qF "$CRON_MARKER_NEW"; then
+        echo "An existing cron job for $TARGET_FILE_PATH was found. It will be overwritten."
+    elif crontab -l 2>/dev/null | grep -qF "$CRON_MARKER_LEGACY"; then
+        echo "An existing cron job for $FILE_NAME was found in the old format. It will be replaced."
     else
-        echo "Setting up a new cron job for $FILE_NAME."
+        echo "Setting up a new cron job for $TARGET_FILE_PATH."
     fi
 
     local existing_cron
-    existing_cron=$(crontab -l 2>/dev/null | grep -vF "$cron_marker" || true)
+    existing_cron=$(filtered_crontab)
 
     local curl_bin
     curl_bin=$(command -v curl)
@@ -103,7 +126,7 @@ write_cron_job() {
     local cron_command
     cron_command="lib_content=\$($curl_bin -s --fail --location \"$FILE_URL\"); if [[ \$? -eq 0 ]]; then echo \"\$lib_content\" > \"$TARGET_FILE_PATH\"; fi"
 
-    local cron_job="*/$FREQUENCY_MINUTES * * * * bash -c '$cron_command' > /dev/null 2>&1 $cron_marker"
+    local cron_job="*/$FREQUENCY_MINUTES * * * * bash -c '$cron_command' > /dev/null 2>&1 $CRON_MARKER_NEW"
 
     (echo "$existing_cron"; echo "$cron_job") | crontab -
 

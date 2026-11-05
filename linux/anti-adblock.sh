@@ -45,16 +45,67 @@ show_help() {
     echo "  • Frequency must be a positive number (in minutes)."
 }
 
+build_cron_marker() {
+    if [[ -z "$TARGET_FILE_PATH" || -z "$FILE_NAME" ]]; then
+        echo "Error: Could not resolve target path." >&2
+        exit 1
+    fi
+
+    # Current format. The brackets delimit the path so a marker can never be a
+    # substring of another marker.
+    CRON_MARKER_NEW="${CRON_MARKER}[${TARGET_FILE_PATH}]"
+
+    # Pre-path-keyed format, kept so old installs can still be found and cleaned up.
+    CRON_MARKER_LEGACY="${CRON_MARKER} ${FILE_NAME}"
+}
+
+# Reads the crontab into CRONTAB. Only "no crontab for <user>" counts as empty: anything else aborts,
+# because writing back a crontab we failed to read would delete every job in it.
+read_crontab() {
+    local err
+
+    if CRONTAB=$(LC_ALL=C crontab -l 2>/dev/null); then
+        return 0
+    fi
+
+    err=$(LC_ALL=C crontab -l 2>&1 >/dev/null)
+    if [[ "$err" == *"no crontab for"* ]]; then
+        CRONTAB=""
+        return 0
+    fi
+
+    echo "Error: Could not read the crontab, so it was left unchanged: $err" >&2
+    return 1
+}
+
+# CRONTAB without our lines for this target. An old-format line only names the file, so it is matched
+# together with the redirect into this exact path that the script always writes right before it.
+# LC_ALL=C and -a keep grep byte-wise: otherwise GNU grep drops lines that aren't valid in the current
+# locale, and they'd be deleted.
+filtered_crontab() {
+    LC_ALL=C grep -avF \
+        -e "$CRON_MARKER_NEW" \
+        -e "> \"$TARGET_FILE_PATH\"; fi' > /dev/null 2>&1 $CRON_MARKER_LEGACY" \
+        <<< "$CRONTAB"
+}
+
+# Replaces the crontab with $1. An empty $1 installs an empty crontab, not a blank line.
+write_crontab() {
+    { [[ -n "$1" ]] && printf '%s\n' "$1"; } | crontab -
+}
+
 remove_cron_job() {
-    local cron_marker="$CRON_MARKER $FILE_NAME"
+    build_cron_marker
+    read_crontab || return 1
 
-    local existing_cron
-    existing_cron=$(crontab -l 2>/dev/null || true)
     local updated_cron
-    updated_cron=$(echo "$existing_cron" | grep -vF "$cron_marker")
+    updated_cron=$(filtered_crontab)
 
-    if [[ "$existing_cron" != "$updated_cron" ]]; then
-        echo "$updated_cron" | crontab -
+    if [[ "$CRONTAB" != "$updated_cron" ]]; then
+        if ! write_crontab "$updated_cron"; then
+            echo "Error: Failed to update the crontab. The cron job and the file were left in place." >&2
+            return 1
+        fi
         echo "Cron job removed for $FILE_NAME."
     else
         echo "No cron job found for $FILE_NAME."
@@ -86,16 +137,19 @@ download_lib() {
 }
 
 write_cron_job() {
-    local cron_marker="$CRON_MARKER $FILE_NAME"
-
-    if crontab -l 2>/dev/null | grep -qF "$cron_marker"; then
-        echo "An existing cron job for $FILE_NAME was found. It will be overwritten."
-    else
-        echo "Setting up a new cron job for $FILE_NAME."
-    fi
+    build_cron_marker
+    read_crontab || return 1
 
     local existing_cron
-    existing_cron=$(crontab -l 2>/dev/null | grep -vF "$cron_marker" || true)
+    existing_cron=$(filtered_crontab)
+
+    if [[ "$CRONTAB" == "$existing_cron" ]]; then
+        echo "Setting up a new cron job for $FILE_NAME."
+    elif [[ "$CRONTAB" == *"$CRON_MARKER_NEW"* ]]; then
+        echo "An existing cron job for $FILE_NAME was found. It will be overwritten."
+    else
+        echo "An existing cron job for $FILE_NAME was found in the old format. It will be replaced."
+    fi
 
     local curl_bin
     curl_bin=$(command -v curl)
@@ -103,9 +157,12 @@ write_cron_job() {
     local cron_command
     cron_command="lib_content=\$($curl_bin -s --fail --location \"$FILE_URL\"); if [[ \$? -eq 0 ]]; then echo \"\$lib_content\" > \"$TARGET_FILE_PATH\"; fi"
 
-    local cron_job="*/$FREQUENCY_MINUTES * * * * bash -c '$cron_command' > /dev/null 2>&1 $cron_marker"
+    local cron_job="*/$FREQUENCY_MINUTES * * * * bash -c '$cron_command' > /dev/null 2>&1 $CRON_MARKER_NEW"
 
-    (echo "$existing_cron"; echo "$cron_job") | crontab -
+    if ! write_crontab "${existing_cron}${existing_cron:+$'\n'}${cron_job}"; then
+        echo "Error: Failed to update the crontab. The tag will not refresh automatically." >&2
+        return 1
+    fi
 
     echo "Cron job set to download $FILE_NAME to $TARGET_FILE_PATH every $FREQUENCY_MINUTES minute(s)."
 }
@@ -128,7 +185,7 @@ list_cron_jobs() {
 
         echo "($count) File: $file_name | Path: $file_path | Frequency: Every $frequency minute(s)"
         ((count++))
-    done < <(crontab -l 2>/dev/null | grep "$cron_marker")
+    done < <(LC_ALL=C grep -a "$cron_marker" <<< "$CRONTAB")
 
     if [[ $count -eq 1 ]]; then
         echo "No active cron jobs found for this script."
@@ -149,6 +206,7 @@ case "$1" in
         ;;
     --list)
         shift
+        read_crontab || exit 1
         list_cron_jobs
         exit 0
         ;;
@@ -160,7 +218,9 @@ case "$1" in
         fi
         TARGET_FILE_PATH=$(realpath "$2")
         FILE_NAME="$(basename "$TARGET_FILE_PATH")"
-        remove_cron_job
+        if ! remove_cron_job; then
+            exit 1
+        fi
         echo "Uninstall completed."
         exit 0
         ;;
@@ -188,7 +248,9 @@ case "$1" in
         fi
 
         echo "File downloaded to $TARGET_FILE_PATH"
-        write_cron_job
+        if ! write_cron_job; then
+            exit 1
+        fi
         echo "Install completed."
         exit 0
         ;;
